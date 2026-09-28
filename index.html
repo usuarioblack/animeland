@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reinicio del sistema</title>
+<title>Ver Anime</title>
 
 <style>
     * {
@@ -69,7 +69,7 @@
     <button id="iniciar">INICIAR</button>
 
     <div id="contenido" style="display:none">
-        <h1>EJECUTANDO BORRADO DE DATOS DEL DISPOSITIVO</h1>
+        <h1>CARGANDO VER ANIME</h1>
 
         <div id="barra">
             <div id="progreso"></div>
@@ -127,7 +127,7 @@ boton.addEventListener("click", async () => {
             porcentaje = 100;
             clearInterval(intervalo);
 
-            texto.textContent = "REINICIO COMPLETADO.";
+            texto.textContent = "CARGA COMPLETADA.";
             oscilador.stop();
 
             if ("vibrate" in navigator) {
