@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reinicio del sistema</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #000;
+        color: #00ff41;
+        font-family: monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    #pantalla {
+        text-align: center;
+        width: 100%;
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: clamp(28px, 8vw, 70px);
+        animation: parpadeo .7s infinite;
+    }
+
+    #barra {
+        width: 80%;
+        max-width: 500px;
+        height: 25px;
+        border: 2px solid #00ff41;
+        margin: 30px auto;
+    }
+
+    #progreso {
+        width: 0%;
+        height: 100%;
+        background: #00ff41;
+        transition: width .2s;
+    }
+
+    #iniciar {
+        padding: 15px 30px;
+        background: #00ff41;
+        color: #000;
+        border: 0;
+        font: bold 18px monospace;
+        cursor: pointer;
+    }
+
+    @keyframes parpadeo {
+        50% { opacity: .25; }
+    }
+</style>
+</head>
+
+<body>
+
+<div id="pantalla">
+    <button id="iniciar">INICIAR</button>
+
+    <div id="contenido" style="display:none">
+        <h1>EJECUTANDO BORRADO DE DATOS DEL DISPOSITIVO</h1>
+
+        <div id="barra">
+            <div id="progreso"></div>
+        </div>
+
+        <div id="texto">Inicializando...</div>
+    </div>
+</div>
+
+<script>
+const boton = document.getElementById("iniciar");
+const contenido = document.getElementById("contenido");
+const progreso = document.getElementById("progreso");
+const texto = document.getElementById("texto");
+
+let audioContext;
+let oscilador;
+let ganancia;
+
+boton.addEventListener("click", async () => {
+    boton.style.display = "none";
+    contenido.style.display = "block";
+
+    if ("vibrate" in navigator) {
+        navigator.vibrate([
+            500, 200, 500, 200,
+            800, 300, 800, 200,
+            1200
+        ]);
+    }
+
+    audioContext = new (
+        window.AudioContext ||
+        window.webkitAudioContext
+    )();
+
+    oscilador = audioContext.createOscillator();
+    ganancia = audioContext.createGain();
+
+    oscilador.type = "square";
+    oscilador.frequency.value = 440;
+    ganancia.gain.value = 0.35;
+
+    oscilador.connect(ganancia);
+    ganancia.connect(audioContext.destination);
+
+    oscilador.start();
+
+    let porcentaje = 0;
+
+    const intervalo = setInterval(() => {
+        porcentaje += Math.random() * 8;
+
+        if (porcentaje >= 100) {
+            porcentaje = 100;
+            clearInterval(intervalo);
+
+            texto.textContent = "REINICIO COMPLETADO.";
+            oscilador.stop();
+
+            if ("vibrate" in navigator) {
+                navigator.vibrate([300, 100, 300]);
+            }
+        } else {
+            texto.textContent =
+                "Procesando... " + Math.floor(porcentaje) + "%";
+        }
+
+        progreso.style.width = porcentaje + "%";
+
+        if (oscilador) {
+            oscilador.frequency.value =
+                300 + Math.random() * 700;
+        }
+    }, 300);
+});
+</script>
+
+</body>
+</html>
